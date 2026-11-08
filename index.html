@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For My Love</title>
+<meta name="theme-color" content="#2a0f24">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ================= CONFIG-ish tokens ================= */
+:root{
+  --bg-1:#2a0f24; --bg-2:#5b1a45; --bg-3:#c2457a;
+  --ink:#fff6f9; --ink-soft:#f6cfe0; --gold:#ffd28a;
+  --rose:#ff7aa8; --card:rgba(255,255,255,.10); --card-line:rgba(255,255,255,.22);
+  --shadow:0 20px 50px rgba(20,0,15,.45);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg-1:#1d0919; --bg-2:#4a1439; --bg-3:#a8386a;
+}}
+:root[data-theme="dark"]{ --bg-1:#1d0919; --bg-2:#4a1439; --bg-3:#a8386a; }
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Quicksand',system-ui,sans-serif; color:var(--ink);
+  background:radial-gradient(120% 90% at 50% 0%, var(--bg-3) 0%, var(--bg-2) 45%, var(--bg-1) 100%) fixed;
+  background-color:var(--bg-1);
+  min-height:100dvh; overflow-x:hidden; text-align:center;
+}
+.script{font-family:'Great Vibes',cursive;font-weight:400}
+
+/* floating hearts */
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.heart{position:absolute;bottom:-40px;opacity:.0;animation:rise linear forwards;filter:drop-shadow(0 0 6px rgba(255,122,168,.6))}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0) rotate(0);opacity:0}
+  10%{opacity:.85}
+  100%{transform:translateY(-110dvh) translateX(var(--drift)) rotate(var(--rot));opacity:0}
+}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
+
+main{position:relative;z-index:2;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+.screen{width:100%;max-width:520px;display:none;flex-direction:column;align-items:center;gap:22px}
+.screen.on{display:flex;animation:fadeUp .9s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* ---------- intro / envelope ---------- */
+.envelope{width:210px;height:140px;position:relative;cursor:pointer;margin:10px auto 0;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-1deg)}}
+.env-body{position:absolute;inset:0;background:linear-gradient(160deg,#ffe3ec,#ffc1d6);border-radius:10px;box-shadow:var(--shadow)}
+.env-flap{position:absolute;left:0;right:0;top:0;height:0;border-left:105px solid transparent;border-right:105px solid transparent;border-top:80px solid #ffb0ca;filter:drop-shadow(0 3px 2px rgba(0,0,0,.12));transform-origin:top;transition:transform .6s ease}
+.env-seal{position:absolute;left:50%;top:58px;transform:translate(-50%,-50%);font-size:34px;animation:beat 1.2s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:translate(-50%,-50%) scale(1)}15%{transform:translate(-50%,-50%) scale(1.18)}30%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.12)}}
+.envelope.open .env-flap{transform:rotateX(180deg)}
+.tap-hint{font-size:15px;color:var(--ink-soft);letter-spacing:.04em;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+h1.script{font-size:clamp(46px,13vw,72px);line-height:1;text-shadow:0 4px 24px rgba(255,122,168,.55)}
+.sub{font-size:16px;color:var(--ink-soft);line-height:1.5;max-width:30ch}
+
+/* ---------- countdown ---------- */
+.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.clock{display:flex;gap:10px;justify-content:center;width:100%}
+.unit{flex:1;max-width:120px;background:var(--card);border:1px solid var(--card-line);border-radius:20px;padding:16px 4px 12px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+.num{font-size:clamp(40px,12vw,60px);font-weight:700;font-variant-numeric:tabular-nums;line-height:1;display:block}
+.num.tick{animation:tick .35s ease}
+@keyframes tick{0%{transform:translateY(-6px);opacity:.3}100%{transform:none;opacity:1}}
+.lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px;display:block}
+.bubble{position:relative;background:#fff;color:#5b1a45;border-radius:22px;padding:18px 20px;font-size:17px;font-weight:600;line-height:1.45;
+  box-shadow:var(--shadow);min-height:92px;display:flex;align-items:center;justify-content:center;width:100%;cursor:pointer;user-select:none}
+.bubble::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);border:10px solid transparent;border-top-color:#fff;border-bottom:0}
+.bubble span{transition:opacity .35s ease, transform .35s ease}
+.bubble span.out{opacity:0;transform:scale(.96)}
+.visit{font-size:13px;color:var(--ink-soft);opacity:.85}
+.progress{width:100%;height:10px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;border:1px solid var(--card-line)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:99px;transition:width 1s linear}
+.small{font-size:12px;color:var(--ink-soft);opacity:.8}
+
+/* ---------- birthday ---------- */
+.bday-title{font-size:clamp(52px,15vw,84px);line-height:.95;text-shadow:0 4px 28px rgba(255,210,138,.5)}
+.bday-name{font-size:clamp(40px,12vw,64px);color:var(--gold);margin-top:-6px}
+.frame{position:relative;width:100%;aspect-ratio:4/5;max-height:62dvh;border-radius:24px;overflow:hidden;box-shadow:var(--shadow);
+  background:linear-gradient(135deg,#ff9ec0,#c2457a);border:6px solid #fff;cursor:pointer}
+.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+.frame img.show{opacity:1;animation:kb 7s ease-out forwards}
+@keyframes kb{from{transform:scale(1.12) translate(var(--kx),var(--ky))}to{transform:scale(1) translate(0,0)}}
+.frame .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:72px}
+.caption{font-size:18px;font-weight:600;min-height:52px;line-height:1.45;padding:0 6px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{font:inherit;font-weight:700;font-size:15px;color:#5b1a45;background:#fff;border:0;border-radius:99px;padding:12px 20px;cursor:pointer;box-shadow:var(--shadow)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--card-line);box-shadow:none}
+.btn:active{transform:scale(.96)}
+.music-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:10;width:48px;height:48px;border-radius:50%;
+  border:1px solid var(--card-line);background:var(--card);backdrop-filter:blur(8px);color:var(--ink);font-size:20px;display:none;cursor:pointer}
+.music-fab.on{display:block}
+.music-fab.playing{animation:spin 4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cake{font-size:56px;animation:bob 2.2s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div id="hearts"></div>
+<canvas id="confetti"></canvas>
+
+<main>
+  <!-- 1. Intro -->
+  <section class="screen on" id="intro">
+    <p class="eyebrow">Special delivery</p>
+    <h1 class="script" id="introTitle">Hey you</h1>
+    <p class="sub">Abrar, who loves you very much, left you a little something.</p>
+    <div class="envelope" id="envelope" role="button" aria-label="Open the letter">
+      <div class="env-body"></div><div class="env-flap"></div><div class="env-seal">💗</div>
+    </div>
+    <p class="tap-hint">tap the letter to open</p>
+  </section>
+
+  <!-- 2. Countdown -->
+  <section class="screen" id="countdown">
+    <p class="eyebrow">Your birthday begins in</p>
+    <div class="clock">
+      <div class="unit"><span class="num" id="hh">00</span><span class="lbl">hours</span></div>
+      <div class="unit"><span class="num" id="mm">00</span><span class="lbl">minutes</span></div>
+      <div class="unit"><span class="num" id="ss">00</span><span class="lbl">seconds</span></div>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    <div class="bubble" id="bubble"><span id="quip">…</span></div>
+    <p class="visit" id="visit"></p>
+    <p class="small">tap the bubble for another one 😌</p>
+  </section>
+
+  <!-- 3. Birthday -->
+  <section class="screen" id="birthday">
+    <div class="cake">🎂</div>
+    <div>
+      <h1 class="script bday-title">Happy 33rd Birthday</h1>
+      <div class="script bday-name" id="bdayName">my love</div>
+    </div>
+    <div class="frame" id="frame"><div class="ph">💞</div></div>
+    <p class="caption" id="caption"></p>
+    <div class="btns">
+      <button class="btn" id="nextBtn">Another memory 💕</button>
+      <button class="btn ghost" id="partyBtn">More confetti 🎉</button>
+    </div>
+  </section>
+</main>
+<button class="music-fab" id="musicFab" aria-label="Toggle music">🎵</button>
+
+<script>
+/* ======================= EDIT ME ======================= */
+const HER_NAME = "Neha";
+const FROM     = "Abrar";
+const BIRTHDAY = new Date("2026-11-09T00:00:00+05:00"); // midnight, Pakistan time
+const PHOTOS   = [ /* "photos/1.jpg", "photos/2.jpg", ... */ ];
+/* ======================================================= */
+
+const QUIPS = [
+  "Warning: you are about to get older. And somehow cuter. Scientists can't explain it.",
+  "Still not midnight. Yes, I know you checked again. I love that about you. 😌",
+  "Loading Birthday Queen… 97%… please remain calm and look fabulous.",
+  "33 and still the most beautiful woman I know. Age is clearly afraid of you. 🤫",
+  "33: wise enough to know better, beautiful enough to get away with it anyway. ✨",
+  "Turning 33 is just 18 with experience, a better wardrobe, and a husband named Abrar. 😎",
+  "Neha at 33 > everyone else at 21. This is not an opinion. It's documented.",
+  "Breaking news: local wife becomes even more beautiful at midnight. Experts baffled.",
+  "Reminder: I'm the best gift you ever got. Tonight's gift is a close second.",
+  "Calories don't count on birthdays. This becomes legally true in a few hours. 🍰",
+  "Every second on that clock, I love you a tiny bit more. It's getting out of hand.",
+  "Your wrinkles were invited to the party. They politely declined. Good choice.",
+  "Do not refresh more than 100 times. Okay, 200. For you? Unlimited.",
+  "Patience, my love. Even cake needs time to be perfect. You didn't — you were born that way.",
+  "Abrar is acting suspicious. That's all I'm allowed to say. 👀",
+  "If you're reading this, go hug Abrar. That's not a joke, it's an order. 🫂",
+  "The universe is preparing your birthday. It asked me what you like. I said: me.",
+  "Fun fact: you've been my favourite person for every single second on this clock. And before.",
+  "Another year of putting up with me? You deserve a medal. And a cake. And a nap.",
+  "Midnight is coming. Please keep your hands and heart inside the vehicle at all times.",
+  "Officially taking applications for 'who loves her most'. Spoiler: the position is filled.",
+  "I would count down the stars for you, but they're too many. So here — seconds. 🌙",
+  "Fun fact: on her birthday, a wife is scientifically 33% more right in every argument. Don't abuse it. (You will.)",
+  "You're not getting older, you're getting… premium. Limited edition. Collector's item. ✨",
+  "Is it midnight yet? No. Is it midnight yet? No. Is it… okay I'll stop. 🙈",
+];
+const REPEAT_QUIPS = [
+  n => `Visit #${n}. Someone's excited and it's adorable. 😏`,
+  n => `You've opened this ${n} times. I'm telling everyone. 😂`,
+  n => `${n} visits! The clock doesn't go faster if you stare at it. I checked. 🕰️`,
+  n => `Visit number ${n}. Honestly? Same energy as me waiting for you to text back. 💌`,
+];
+const CAPTIONS = [
+  "Of all my favourite moments, you're in every single one.",
+  "Another year of you is the best thing that ever happened to this world.",
+  "Thank you for choosing me. Every day. Even the days I leave socks around.",
+  "You make ordinary days feel like this picture.",
+  "Look at us. Look at how lucky I am.",
+  "My home isn't a place. It's you.",
+  "I'd pick you in every lifetime, in every version of the story.",
+  "You laugh, and suddenly everything is okay.",
+  "Here's to more trips, more silly fights, more making up, and more of us.",
+  "You're my best friend, my calm, my chaos, and my favourite person.",
+  "Happy 33rd, Neha. You made my whole life better.",
+  "I love you more than yesterday. Less than tomorrow.",
+];
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+};
+const params = new URLSearchParams(location.search);
+const FORCE_BDAY = params.has("party");          // ?party to preview birthday mode
+const FAKE_SECS  = parseInt(params.get("in"),10); // ?in=10 to test the transition
+const target = Number.isFinite(FAKE_SECS) ? new Date(Date.now()+FAKE_SECS*1000) : BIRTHDAY;
+const isBday = () => FORCE_BDAY || Date.now() >= target.getTime();
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]} return a; };
+
+$("bdayName").textContent = HER_NAME;
+$("introTitle").textContent = HER_NAME === "my love" ? "Hey you 💗" : `Hey ${HER_NAME} 💗`;
+
+/* ---------- floating hearts ---------- */
+const HEARTS = ["💗","💖","💕","❤️","🩷","💞","✨"];
+function spawnHeart(big){
+  const h = document.createElement("span");
+  h.className = "heart";
+  h.textContent = HEARTS[Math.random()*HEARTS.length|0];
+  const size = (big?22:12) + Math.random()*(big?26:16);
+  h.style.left = Math.random()*100 + "vw";
+  h.style.fontSize = size + "px";
+  h.style.setProperty("--drift", (Math.random()*120-60)+"px");
+  h.style.setProperty("--rot", (Math.random()*80-40)+"deg");
+  h.style.animationDuration = (7 + Math.random()*7) + "s";
+  $("hearts").appendChild(h);
+  setTimeout(()=>h.remove(), 15000);
+}
+let heartRate = 900;
+(function heartLoop(){ spawnHeart(heartRate<500); setTimeout(heartLoop, heartRate); })();
+
+/* ---------- confetti ---------- */
+const cv = $("confetti"), cx = cv.getContext("2d");
+let bits = [], confettiOn = false;
+function sizeCanvas(){ cv.width = innerWidth*devicePixelRatio; cv.height = innerHeight*devicePixelRatio; cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+addEventListener("resize", sizeCanvas); sizeCanvas();
+const CCOL = ["#ff7aa8","#ffd28a","#ffffff","#c2457a","#ffb0ca","#9fe3ff"];
+function burst(n=180){
+  for(let i=0;i<n;i++) bits.push({
+    x: innerWidth/2 + (Math.random()-.5)*innerWidth*.6, y: innerHeight*.35 + (Math.random()-.5)*60,
+    vx:(Math.random()-.5)*12, vy:-Math.random()*12-4, r:Math.random()*360, vr:(Math.random()-.5)*14,
+    w:6+Math.random()*6, h:8+Math.random()*10, c:CCOL[Math.random()*CCOL.length|0], life:0
+  });
+  if(!confettiOn){ confettiOn=true; requestAnimationFrame(drawConfetti); }
+}
+function drawConfetti(){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  bits.forEach(b=>{ b.vy+=.28; b.vx*=.99; b.x+=b.vx; b.y+=b.vy; b.r+=b.vr; b.life++;
+    cx.save(); cx.translate(b.x,b.y); cx.rotate(b.r*Math.PI/180); cx.fillStyle=b.c; cx.fillRect(-b.w/2,-b.h/2,b.w,b.h*Math.abs(Math.cos(b.life/8))); cx.restore(); });
+  bits = bits.filter(b=>b.y < innerHeight+40);
+  if(bits.length) requestAnimationFrame(drawConfetti); else { confettiOn=false; cx.clearRect(0,0,innerWidth,innerHeight); }
+}
+
+/* ---------- Happy Birthday (synthesised music box) ---------- */
+let ac = null, master = null, playing = false, loopTimer = null;
+function unlockAudio(){
+  if(!ac){
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    ac = new AC(); master = ac.createGain(); master.gain.value = .55;
+    // soft echo for a dreamy music-box feel
+    const delay = ac.createDelay(); delay.delayTime.value = .28;
+    const fb = ac.createGain(); fb.gain.value = .28;
+    const wet = ac.createGain(); wet.gain.value = .35;
+    master.connect(ac.destination); master.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(ac.destination);
+  }
+  if(ac.state === "suspended") ac.resume();
+}
+const NOTE = n => { const m={C:0,D:2,E:4,F:5,G:7,A:9,B:11}; const pc=m[n[0]]+(n[1]==="#"?1:n[1]==="b"?-1:0); const oct=+n.slice(-1); return 440*Math.pow(2,(pc+12*(oct+1)-69)/12); };
+function bell(freq, t, dur, vol=.35){
+  [[1,"sine",1],[2,"sine",.22],[3,"triangle",.08]].forEach(([mul,type,g])=>{
+    const o = ac.createOscillator(), e = ac.createGain();
+    o.type = type; o.frequency.value = freq*mul;
+    e.gain.setValueAtTime(0,t); e.gain.linearRampToValueAtTime(vol*g,t+.01); e.gain.exponentialRampToValueAtTime(.0001,t+Math.max(dur*1.6,.8));
+    o.connect(e); e.connect(master); o.start(t); o.stop(t+Math.max(dur*1.6,.8)+.05);
+  });
+}
+// melody [note, beats]  (3/4 time, public-domain tune)
+const MELODY = [
+  ["G4",.75],["G4",.25],["A4",1],["G4",1],["C5",1],["B4",2],
+  ["G4",.75],["G4",.25],["A4",1],["G4",1],["D5",1],["C5",2],
+  ["G4",.75],["G4",.25],["G5",1],["E5",1],["C5",1],["B4",1],["A4",2],
+  ["F5",.75],["F5",.25],["E5",1],["C5",1],["D5",1],["C5",3],
+];
+// bass: one note per bar (starts on the downbeat after the pickup)
+const BASS = ["C3","G2","G2","C3","C3","F2","C3","G2","C3"];
+function playSong(){
+  if(!ac) return;
+  const beat = .52; let t = ac.currentTime + .15;
+  const start = t;
+  MELODY.forEach(([n,b])=>{ bell(NOTE(n), t, b*beat); t += b*beat; });
+  BASS.forEach((n,i)=>{ bell(NOTE(n), start + beat + i*3*beat, 3*beat, .22); });
+  const len = (t - ac.currentTime) * 1000;
+  loopTimer = setTimeout(()=>{ if(playing) playSong(); }, len + 2200);
+}
+function startMusic(){ unlockAudio(); if(!ac || playing) return; playing = true; $("musicFab").classList.add("playing"); $("musicFab").textContent="🎵"; playSong(); }
+function stopMusic(){ playing = false; clearTimeout(loopTimer); $("musicFab").classList.remove("playing"); $("musicFab").textContent="🔇";
+  if(master){ const now=ac.currentTime; master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value,now); master.gain.linearRampToValueAtTime(0,now+.3); setTimeout(()=>{ master.gain.value=.55 },400);} }
+$("musicFab").onclick = () => playing ? stopMusic() : startMusic();
+
+/* ---------- countdown ---------- */
+const visits = (parseInt(store.get("bday_visits"),10) || 0) + 1;
+store.set("bday_visits", visits);
+let quipOrder = shuffle(QUIPS), qi = 0;
+function setQuip(text){
+  const s = $("quip"); s.classList.add("out");
+  setTimeout(()=>{ s.textContent = text; s.classList.remove("out"); }, 300);
+}
+function nextQuip(){ setQuip(quipOrder[qi++ % quipOrder.length]); }
+$("bubble").onclick = () => { nextQuip(); spawnHeart(true); spawnHeart(true); };
+
+const startOfDay = new Date(target.getTime() - 24*3600e3); // progress bar = "today" filling up
+let last = {};
+function pad(n){ return String(n).padStart(2,"0"); }
+function renderClock(){
+  const ms = Math.max(0, target - Date.now());
+  const s = Math.floor(ms/1000);
+  const vals = { hh: pad(Math.floor(s/3600)), mm: pad(Math.floor(s%3600/60)), ss: pad(s%60) };
+  for(const k in vals){ if(last[k] !== vals[k]){ const el=$(k); el.textContent = vals[k]; el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); last[k]=vals[k]; } }
+  const pct = Math.min(100, Math.max(0, (Date.now()-startOfDay)/(target-startOfDay)*100));
+  $("bar").style.width = pct + "%";
+  if(s <= 60) heartRate = 250;          // final minute: heart storm
+  else if(s <= 600) heartRate = 500;
+  if(ms <= 0) goBirthday(true);
+}
+
+/* ---------- birthday ---------- */
+let photoOrder = [], pi = 0, slideTimer = null, capOrder = shuffle(CAPTIONS), ci = 0;
+function showPhoto(){
+  const frame = $("frame");
+  $("caption").textContent = capOrder[ci++ % capOrder.length];
+  if(!PHOTOS.length) return;
+  if(pi >= photoOrder.length){ photoOrder = shuffle(PHOTOS); pi = 0; }
+  const img = new Image();
+  img.alt = "Us";
+  img.style.setProperty("--kx", (Math.random()*6-3)+"%");
+  img.style.setProperty("--ky", (Math.random()*6-3)+"%");
+  img.onload = () => {
+    frame.appendChild(img);
+    requestAnimationFrame(()=>img.classList.add("show"));
+    const old = [...frame.querySelectorAll("img")].slice(0,-1);
+    setTimeout(()=>old.forEach(o=>o.remove()), 1300);
+  };
+  img.src = photoOrder[pi++];
+}
+function nextMemory(){ clearInterval(slideTimer); showPhoto(); slideTimer = setInterval(showPhoto, 6000); spawnHeart(true); }
+$("nextBtn").onclick = nextMemory;
+$("frame").onclick = nextMemory;
+$("partyBtn").onclick = () => { burst(220); startMusic(); };
+
+let inBday = false, clockTimer = null, quipTimer = null;
+function goBirthday(live){
+  if(inBday) return; inBday = true;
+  clearInterval(clockTimer); clearInterval(quipTimer);
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  $("birthday").classList.add("on");
+  $("musicFab").classList.add("on");
+  heartRate = 380;
+  startMusic();
+  burst(260); setTimeout(()=>burst(180), 900); setTimeout(()=>burst(140), 2200);
+  if(PHOTOS.length) $("frame").querySelector(".ph").remove();
+  nextMemory();
+}
+
+function goCountdown(){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  $("countdown").classList.add("on");
+  const first = quipOrder[qi++];
+  $("quip").textContent = visits > 2 && Math.random() < .5 ? REPEAT_QUIPS[Math.random()*REPEAT_QUIPS.length|0](visits) : first;
+  $("visit").textContent = visits === 1 ? "First visit. Welcome, Neha 💌" : `Visit #${visits} · with love, ${FROM}`;
+  renderClock();
+  clockTimer = setInterval(renderClock, 1000);
+  quipTimer = setInterval(nextQuip, 9000);
+}
+
+/* ---------- intro: one tap opens + unlocks audio for midnight ---------- */
+let opened = false;
+function openLetter(){
+  if(opened) return; opened = true;
+  unlockAudio();
+  $("envelope").classList.add("open");
+  for(let i=0;i<10;i++) setTimeout(()=>spawnHeart(true), i*60);
+  setTimeout(()=> isBday() ? goBirthday(false) : goCountdown(), 650);
+}
+$("envelope").onclick = openLetter;
+$("intro").onclick = openLetter;
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && ac && ac.state==="suspended") ac.resume(); });
+</script>
+</body>
+</html>
