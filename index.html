@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>For My Love</title>
 <meta name="theme-color" content="#2a0f24">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -180,7 +183,7 @@ h1.script{font-size:clamp(46px,13vw,72px);line-height:1;text-shadow:0 4px 24px r
 /* ======================= EDIT ME ======================= */
 const HER_NAME = "Neha";
 const FROM     = "Abrar";
-const BIRTHDAY = new Date("2026-11-09T00:15:00+05:00"); // midnight, Pakistan time
+const BIRTHDAY = new Date("2026-11-09T00:27:00+05:00"); // midnight, Pakistan time
 const PHOTOS   = Array.from({length:11},(_,i)=>`photos/${i+1}.jpg`);
 /* ======================================================= */
 
@@ -447,8 +450,18 @@ function goCountdown(){
 
 /* ---------- intro: one tap opens + unlocks audio for midnight ---------- */
 let opened = false;
+function goFullscreen(){
+  const el = document.documentElement;
+  try{
+    const r = (el.requestFullscreen || el.webkitRequestFullscreen || el.webkitRequestFullScreen);
+    if(r){ const pr = r.call(el, {navigationUI:"hide"}); if(pr && pr.catch) pr.catch(()=>{}); }
+  }catch(e){}
+}
+// tapping anywhere goes back to full screen if she left it
+document.addEventListener("click", ()=>{ if(opened && !(document.fullscreenElement || document.webkitFullscreenElement)) goFullscreen(); });
 function openLetter(){
   if(opened) return; opened = true;
+  goFullscreen();
   unlockAudio();
   $("envelope").classList.add("open");
   for(let i=0;i<10;i++) setTimeout(()=>spawnHeart(true), i*60);
